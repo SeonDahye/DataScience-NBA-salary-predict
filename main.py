@@ -128,20 +128,16 @@ print(df_final.info())
 # for test get the year=2016 data
 df_final_2016 = df_final[df_final['Year'] == 2016]
 df_final_2016.reset_index(inplace=True)
-# 함수에 들어갈 dataframe
+# final dataframe
 df_f = df_final.drop(['Player', 'index', 'Salary in $'], axis=1)
 df_f_2016 = df_final_2016.drop(['Player', 'index', 'level_0', 'Salary in $'], axis=1)
 
 
-#############################
-# open source 기여
-
-# open source 기여
 
 #############################
-# open source 기여
+# Open Source Contribution Part
 #############################
-# open source 기여
+
 # Linear Regression function
 def LinearReg(x, y):
     x_train, x_test, y_train, y_test = train_test_split(x, y, random_state=1, shuffle=True)
@@ -157,26 +153,25 @@ def RandomForestReg(x, y):
     rfModel.fit(x_train, y_train)
     score = rfModel.score(x_test, y_test)
     return score
+
 # scaling
 def scaling(data, scale):
     if scale == 'StandardScaling':
         scaler = StandardScaler()
-        scaled_data = scaler.fit_transform(data)
     elif scale == 'RobustScaling':
         scaler = RobustScaler()
-        scaled_data = scaler.fit_transform(data)
     elif scale == 'MinMaxScaling':
         scaler = MinMaxScaler()
-        scaled_data = scaler.fit_transform(data)
     elif scale == 'MaxAbsScaling':
         scaler = MaxAbsScaler()
-        scaled_data = scaler.fit_transform(data)
     elif scale == 'Normalizer':
         scaler = Normalizer()
-        scaled_data = scaler.fit_transform(data)
+
+    scaled_data = scaler.fit_transform(data)
 
     df_scaled_data = pd.DataFrame(columns=data.columns, data=scaled_data)
     return df_scaled_data
+
 # encoding
 def encoding(data, encode):
     if encode == 'OrdinalEncoding':
@@ -193,7 +188,7 @@ def compute_Score(df, scalingList=None, encodingList=None):
     df_cate = df.select_dtypes(include='object')
     df_nume = df.select_dtypes(exclude='object')
 
-    size = len(scalingList) * len(encodingList)  # 8
+    size = len(scalingList) * len(encodingList)
     dataframeList = [0 for j in range(size)]
 
     for i in range(len(encodingList)):
@@ -208,18 +203,20 @@ def compute_Score(df, scalingList=None, encodingList=None):
             else:
                 index = x + i + len(scalingList) - 1
             dataframeList[index] = pd.concat([data_nume, data_cate], axis=1)
-            # ############# Use this if you want to print all the combination ##############
+
+            # ############# Use this if you want to print all the combination dataframe ##############
             # print('########################################')
             # print('Scaling Method:', scalingList[x], '\nEncoding Method:', encodingList[i])
             # print(dataframeList[index])
             # ##############################################################################
+
     return dataframeList
 
 
 def Score(df, scalingList, encodingList, algorithmList):
     scaled_df = compute_Score(df, scalingList, encodingList)
-    # print(scaled_df)
-    size = len(scalingList) * len(encodingList)  # 8
+
+    size = len(scalingList) * len(encodingList)
     s = [0 for i in range(size)]
     # Score using these algorithms
     for i in range(len(scaled_df)):
@@ -227,61 +224,65 @@ def Score(df, scalingList, encodingList, algorithmList):
         y = df_final['Salary in $']
         if algorithmList == 'LinearRegression':
             s[i] = LinearReg(x, y)
-            # print("Linear", s)
         elif algorithmList == 'RandomForestRegression':
             s[i] = RandomForestReg(x, y)
-            # print("Random", s)
+
     # find the best scores and indices
-    max_index = s.index(max(s))  # If the max is index( 0 ~ 7 )
-    # max_index = 5
-    scaling_index = max_index % len(scalingList)  # 4 % 4 == 0
-    scaled_method = scalingList[scaling_index]  # index 0's scaling method save to string -> LinearRegression
+    max_index = s.index(max(s))  # index of the best score
+
+    scaling_index = max_index % len(scalingList)
+    scaled_method = scalingList[scaling_index]  # Save best scaling method
     if max_index % 2 == 0:
         encoding_index = 1
     else:
         encoding_index = 1
     print('encoding_index:', encoding_index)
-    encoding_method = encodingList[encoding_index]  # First encoding method  save to string -> OneHotEncoding
+    encoding_method = encodingList[encoding_index]  # Save best encoding method
     print(algorithmList, s)
     print('The best method:', scaled_method, encoding_method, algorithmList)
     return max(s)
+
 def Score_df(df):
     # if parameter is only dataframe, the other parameter are filled with default value
     scalingList = ['StandardScaling']
     encodingList = ['OrdinalEncoding']
     algorithmList = 'LinearRegression'
+
     scaled_df = compute_Score(df, scalingList, encodingList)
-    # print(scaled_df)
-    size = len(scalingList) * len(encodingList)  # 8
+
+    size = len(scalingList) * len(encodingList)
     s = [0 for i in range(size)]
-    # s = np.array([0, 0, 0, 0, 0, 0, 0, 0])
+
     for i in range(len(scaled_df)):
         x = scaled_df[i]
         y = df_final['Salary in $']
         if algorithmList == 'LinearRegression':
             s[i] = LinearReg(x, y)
-            # print("Linear", s)
         elif algorithmList == 'RandomForestRegression':
             s[i] = RandomForestReg(x, y)
-            # print("Random", s)
+
     print(algorithmList, s)
     print('Used default values:', scalingList, encodingList, algorithmList)
     return max(s)
-########### User press part
 
-print('#########################\nScore 실행')
+
+
+########### User  part
+
+print('#########################\nScore ')
 score = Score(df_f,
               ['StandardScaling', 'RobustScaling', 'MinMaxScaling', 'MaxAbsScaling','Normalizer'],
               ['OrdinalEncoding', 'OneHotEncoding'], 'LinearRegression')
 
 print('The best score:', score)
 
-# df만 입력했을 때
-print('#########################\nScore_df 실행')
+# if you want to input only dataframe, use Score_df ( It will use default scaler & encoder & algorithm )
+print('#########################\nScore_df')
 score = Score_df(df_f)
 print('Score using the default values:', score)
 
 #############################
+# Actual dataframe we will use in this project
 
 score = Score(df_f, ['StandardScaling', 'RobustScaling', 'MinMaxScaling', 'MaxAbsScaling'],
               ['OrdinalEncoding', 'OneHotEncoding'], 'RandomForestRegression')
