@@ -102,7 +102,7 @@ def encoding(data, encode):
  This function split the given dataset into categorical & numerical dataset.
  Then run the encoder with categorical dataset and scale with the numerical dataset.
  Put the result of it into the list 'dataframeList' by the order.
- This returns that list(scaled & encoded).
+ This returns the list(scaled & encoded).
  
  ```python
 def compute_Score(df, scalingList=None, encodingList=None):
@@ -129,7 +129,7 @@ def compute_Score(df, scalingList=None, encodingList=None):
         	# print('########################################')
         	# print('Scaling Method:', scalingList[x], '\nEncoding Method:', encodingList[i])
         	# print(dataframeList[index])
-        	# ##############################################################################
+        	# ########################################################################################
  
 	return dataframeList
  
